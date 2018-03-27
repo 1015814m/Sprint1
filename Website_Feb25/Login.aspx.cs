@@ -63,6 +63,10 @@ public partial class _Default : System.Web.UI.Page
                                 break;
                             case 3:
                                 Session["login"] = 3;
+                                //if (!enabledVendor(loginID))
+                                //{
+                                //    verify = false;
+                                //}
                                 break;
                             default:
                                 Session["login"] = -1;
@@ -258,8 +262,34 @@ public partial class _Default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            employeeLogin.FailureText = "" + ex;
+            
         }
         return isEnabled;
     }
+
+    //protected Boolean enabledVendor(int id)
+    //{
+    //    Boolean isEnabled = false;
+    //    try
+    //    {
+    //        string commandText = "select top 1 [Enabled] as Result from [dbo].[RewardProvider] where EmpLoginID = @EmpLoginID";
+    //        SqlConnection conn = ProjectDB.connectToDB();
+    //        SqlCommand select = new SqlCommand(commandText, conn);
+    //        select.Parameters.AddWithValue("@EmpLoginID", conn);
+
+    //        SqlDataReader reader = select.ExecuteReader();
+
+    //        if(reader.HasRows)
+    //        {
+    //            reader.Read();
+    //            isEnabled = (Boolean)reader["Result"];
+    //        }
+    //        conn.Close();
+    //    }
+    //    catch (Exception)
+    //    {
+
+    //    }
+    //    return isEnabled;
+    //}
 }
