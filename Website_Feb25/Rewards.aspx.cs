@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using database;
 using System.Data.SqlClient;
+using Stripe;
 
 public partial class Rewards : System.Web.UI.Page
 {
@@ -16,6 +17,8 @@ public partial class Rewards : System.Web.UI.Page
     static string error = "";
     private int loginType;
     private Employee user;
+    public string theName;
+    public string thePoints;
     protected void Page_Load(object sender, EventArgs e)
     {
 
@@ -44,15 +47,17 @@ public partial class Rewards : System.Web.UI.Page
         {
             user = (Employee)Session["user"];
         }
-        user.Points = getPoints(findEmployeeID(user.EmpLoginID));
+        //user.Points = getPoints(findEmployeeID(user.EmpLoginID));
         Session["user"] = user;
 
         num = countRewards();
         itemArray = new RewardItem[num];
 
-        lblPoints.Text = user.FirstName + " " + user.LastName + " you currently have " + Decimal.Round(user.Points, 2) + " Points!";
+        lblPoints.Text = user.FirstName + " " + user.LastName + " you currently have " + Decimal.Round(user.Points, 0) + " Points!";
         errorMessage.Text = error;
 
+        theName = user.FirstName + " " + user.LastName;
+        thePoints = Decimal.Round(user.Points, 0) + " points";
 
         populateArray();
 
@@ -69,7 +74,7 @@ public partial class Rewards : System.Web.UI.Page
             imgArray[i].ImageAlign = ImageAlign.Left;
 
             txtArray[i] = new TextBox();
-            txtArray[i].Height = 200;
+            txtArray[i].Height = 60;
             txtArray[i].Width = 500;
             txtArray[i].TextMode = TextBoxMode.MultiLine;
 
@@ -83,19 +88,19 @@ public partial class Rewards : System.Web.UI.Page
             feed.Controls.Add(imgArray[i]);
             imgArray[i].ImageUrl = findImage(itemArray[i].RewardID);
             feed.Controls.Add(txtArray[i]);
-            //feed.Controls.Add(new LiteralControl("<br />"));
+            feed.Controls.Add(new LiteralControl("<br />"));
             feed.Controls.Add(btnArray[i]);
+            feed.Controls.Add(new LiteralControl("<br />"));
+            feed.Controls.Add(new LiteralControl("<br />"));
             feed.Controls.Add(new LiteralControl("<br />"));
         }
 
         for (int i = 0; i < itemArray.Length; i++)
         {
             txtArray[i].Text += "Reward Name: " + itemArray[i].Name + Environment.NewLine;
-            txtArray[i].Text += "Reward Description: " + itemArray[i].Description;
+            
             txtArray[i].Text += Environment.NewLine + "Price: $" + Decimal.Round(itemArray[i].Price) + Environment.NewLine;
-            txtArray[i].Text += "Offer Start Date: " + (itemArray[i].StartDate).ToShortDateString() + Environment.NewLine;
-            txtArray[i].Text += "Offer End Date: " + (itemArray[i].EndDate).ToShortDateString() + Environment.NewLine;
-            txtArray[i].Text += "Quantity Remaining: " + itemArray[i].Quantity + Environment.NewLine;
+            
         }
         
     }
@@ -126,7 +131,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>There are no reward available.";
+            error = "<br/>There are no reward available.";
         }
         return count;
     }
@@ -173,7 +178,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>Error Populating Rewards.";
+            error = "<br/>Error Populating Rewards.";
         }
     }
 
@@ -214,7 +219,7 @@ public partial class Rewards : System.Web.UI.Page
 
                 insert.Parameters.AddWithValue("@Cost", itemArray[id].Price);
                 insert.Parameters.AddWithValue("@PurchaseTime", DateTime.Now);
-                insert.Parameters.AddWithValue("@EmployeeID", findEmployeeID(user.EmpLoginID));
+                insert.Parameters.AddWithValue("@EmployeeID", user.EmployeeID);
                 insert.Parameters.AddWithValue("@RewardID", itemArray[id].RewardID);
                 insert.Parameters.AddWithValue("@CompanyID", user.CompanyID);
 
@@ -223,22 +228,23 @@ public partial class Rewards : System.Web.UI.Page
                 conn.Close();
 
                 subtractPoints(itemArray[id].Price);
-
+                stripeCharge(itemArray[id].Price, "sk_test_vegjkSuZBNAr5sbs5QATCmos");
                 subtractQuantity(1, itemArray[id].RewardID);
 
                 updateFeed();
 
                 sendEmail(user.Email, id);
+                
                 error = "";
             }
             catch (Exception)
             {
-                error += "<br/>Error Purchasing Reward.";
+                error = "<br/>Error Purchasing Reward.";
             }
         }
         else
         {
-            error += "<br/>You do not have enough points to make this purchase.";
+            error = "<br/>You do not have enough points to make this purchase.";
         }
     }
 
@@ -252,7 +258,7 @@ public partial class Rewards : System.Web.UI.Page
             SqlCommand update = new SqlCommand(commandText, conn);
 
             update.Parameters.AddWithValue("@Points", user.Points - cost);
-            update.Parameters.AddWithValue("@EmployeeID", findEmployeeID(user.EmpLoginID));
+            update.Parameters.AddWithValue("@EmployeeID", user.EmployeeID);
 
             user.Points = user.Points - cost;
 
@@ -292,7 +298,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>Error Finding EmployeeID";
+            error = "<br/>Error Finding EmployeeID";
             return employeeID;
         }
     }
@@ -302,7 +308,7 @@ public partial class Rewards : System.Web.UI.Page
 
         try
         {
-            string commandText = "INSERT INTO [dbo].[FeedInformation] ([PostTime],[NumOfLikes],[TransactionID]) Values (@PostTime, @NumOfLikes, @TransactionID, @CompanyID)";
+            string commandText = "INSERT INTO [dbo].[FeedInformation] ([PostTime],[NumOfLikes],[TransactionID],[CompanyID]) Values (@PostTime, @NumOfLikes, @TransactionID, @CompanyID)";
             SqlConnection conn = ProjectDB.connectToDB();
             SqlCommand insert = new SqlCommand(commandText, conn);
 
@@ -317,7 +323,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>Error Updating Feed.";
+            error = "<br/>Error Updating Feed.";
         }
     }
 
@@ -341,7 +347,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>Error Finding Recent Transactions.";
+            error = "<br/>Error Finding Recent Transactions.";
         }
         return a;
     }
@@ -364,7 +370,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            error += "<br/>Error Subtracting Quantity";
+            error = "<br/>Error Subtracting Quantity";
         }
     }
 
@@ -390,7 +396,7 @@ public partial class Rewards : System.Web.UI.Page
         }
         catch (Exception)
         {
-            error += "<br/>Error Getting Quantity.";
+            error = "<br/>Error Getting Quantity.";
         }
         return quantity;
     }
@@ -482,6 +488,32 @@ public partial class Rewards : System.Web.UI.Page
 
         }
         return points;
+    }
+
+    protected void stripeCharge(Decimal amount, string api)
+    {
+        try
+        {
+            int amt = (int)amount * 100;
+            // Set your secret key: remember to change this to your live secret key in production
+            // See your keys here: https://dashboard.stripe.com/account/apikeys
+            StripeConfiguration.SetApiKey(api);
+
+            var chargeOptions = new StripeChargeCreateOptions()
+            {
+                Amount = amt,
+                Currency = "usd",
+                Description = "Charge Test",
+                SourceTokenOrExistingSourceId = "tok_visa"
+            };
+            var chargeService = new StripeChargeService();
+            StripeCharge charge = chargeService.Create(chargeOptions);
+
+        }
+        catch (Exception)
+        {
+
+        }
     }
 
 

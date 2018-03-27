@@ -18,6 +18,8 @@ public partial class GivePoints : System.Web.UI.Page
     Achievement achv;
     private int loginType;
     private Employee user;
+    public string theName;
+    public string thePoints;
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!this.IsPostBack)
@@ -51,7 +53,8 @@ public partial class GivePoints : System.Web.UI.Page
             user = (Employee)Session["user"];
         }
 
-
+        theName = user.FirstName + " " + user.LastName;
+        thePoints = Decimal.Round(user.Points, 0) + " points";
 
         if (DropDownApplaud.SelectedIndex > 0)
         {

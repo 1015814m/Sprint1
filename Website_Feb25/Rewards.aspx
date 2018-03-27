@@ -8,6 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/custom.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab:100,300,400,700" rel="stylesheet">
         <style>
         body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
         body {font-size:16px;}
@@ -34,7 +40,7 @@
             resize: vertical;
         }
         .welcomelabel {
-            color: #F44336;
+            
             font-weight: bold;
             font-size: x-large;
         }
@@ -48,28 +54,43 @@
     </head>
     <body>
 
-    <!-- Sidebar/menu -->
-    <nav class="w3-sidebar w3-red w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;" id="mySidebar"><br>
-      <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft" style="width:100%;font-size:22px">Close Menu</a>
-      <div class="w3-container">
-        <h3 class="w3-padding-64"><b><br>KUDOS</b></h3>
-      </div>
-      <div class="w3-bar-block">
-        <a href="HomePage.aspx" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a> 
-        <a href="GivePoints.aspx" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Give Points</a> 
-        <a href="Rewards.aspx" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">View Rewards</a>  
-        <a href="Logout.aspx" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Logout</a>
-      </div>
+        <nav class="navbar navbar-inverse">
+        <div class="container-fluid" style="padding-left: 30px; padding-right: 50px;">
+            <div class="navbar-header">
+                
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#MyNavbar">
+                    <img src="img/profile_icon.png" class="toppic"></a>
+                </button>
+
+                <a class="navbar-brand" href="GivePoints.aspx"><img id="logo-img" src="img/applaud_full.png"></a>
+            </div>
+            <div class="collapse navbar-collapse" id="MyNavbar">
+                <ul class="nav navbar-nav navbar-right">
+                    
+                    <li><a href="HomePage.aspx">Home</a></li>
+                    <li class="active"><a href="Rewards.aspx">Boards</a></li>
+
+                    <li><a href="GivePoints.aspx">Reward</a></li>
+
+                    <li class="hidden-xl hidden-lg hidden-md hidden-sm"><a href="#">Profile</a></li>
+                    
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle hidden-xs" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="padding-top: 12px;"><img src="img/profile_icon.png" class="toppic"> <span class="caret"></span></a>
+                            <ul class="dropdown-menu righted">
+                                <li class="dropdown-header"><%=theName%></li>
+                                <li class="dropdown-header"><%=thePoints%></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="Logout.aspx">Log Out</a></li>
+                            </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
     </nav>
 
-    <!-- Top menu on small screens -->
-    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
-      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
-      <span>KUDOS</span>
-    </header>
-
-    <!-- Overlay effect when opening sidebar on small screens -->
-    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+    
 
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
@@ -81,8 +102,17 @@
         <form id="feed" runat="server">
             
             
-            <h3 class="w3-xlarge w3-text-red"><asp:Label ID="lblPoints" CssClass="welcomelabel" runat="server" Text=""></asp:Label></h3>
-            <hr style="width:50px;border:5px solid red; float: left;" class="w3-round">
+            <h3 class="w3-xlarge"><asp:Label ID="lblPoints" CssClass="welcomelabel" runat="server" Text=""></asp:Label></h3>
+            <hr style="width:50px;border:5px solid #fcb32a; float: left;" class="w3-round">
+            
+            <div class="row" style="margin-top:30px;">
+                <div class="col-sm-12">
+                    <h1 style="color:#af1a1a;">Still in a Giving Mood?</h1>
+                    <button class="charity-btn">Donate Money to Charity</button>
+                </div>
+            </div>
+
+
             <br />
 
             <asp:Label ID="lblSuccess" runat="server" Text=""></asp:Label>
@@ -126,6 +156,14 @@
             captionText.innerHTML = element.alt;
         }
     </script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="js/custom.js"></script>
+
+    <script src="js/drop.js"></script>
 
     </body>
 </html>

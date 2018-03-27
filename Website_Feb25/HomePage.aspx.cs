@@ -16,6 +16,8 @@ public partial class HomePage : System.Web.UI.Page
     static int numOfPosts = 20;
     static Posts[] postsArray = new Posts[numOfPosts];
     private int loginType;
+    public string theName;
+    public string thePoints;
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["employeeLoggedIn"] == null)
@@ -44,10 +46,10 @@ public partial class HomePage : System.Web.UI.Page
             user = (Employee)Session["user"];
         }
 
-        user.Points = getPoints(findEmployeeID(user.EmpLoginID));
+        //user.Points = getPoints(findEmployeeID(user.EmpLoginID));
         Session["user"] = user;
 
-        welcomeMessage.Text = "Welcome " + user.FirstName + " " + user.LastName + " you currently have " + Decimal.Round(user.Points, 2) + " points!";
+        welcomeMessage.Text = "Welcome, " + user.FirstName + " " + user.LastName + "! You currently have " + Decimal.Round(user.Points, 0) + " points!";
 
         form1.Controls.Add(new LiteralControl("<br />"));
 
@@ -59,6 +61,8 @@ public partial class HomePage : System.Web.UI.Page
         Label[] lblArray = new Label[numOfPosts];
 
 
+        theName = user.FirstName + " " + user.LastName;
+        thePoints = Decimal.Round(user.Points, 0) + " points";
         
 
 
@@ -79,7 +83,7 @@ public partial class HomePage : System.Web.UI.Page
             txtArray[i].ReadOnly = true;
 
             btnArray[i] = new Button();
-            btnArray[i].Text = "Like :)";
+            btnArray[i].Text = "Like";
             btnArray[i].CssClass = "button";
 
             lblArray[i] = new Label();
@@ -372,7 +376,7 @@ public partial class HomePage : System.Web.UI.Page
 
     protected string findImage(int id)
     {
-        string img = "~/Images/DefaultImg.jpg";
+        string img = "~/img/profile_icon.png";
         try
         {
             string commandText = "SELECT TOP 1 ImageURL from [dbo].[Image] WHERE EmployeeID = @EmployeeID";

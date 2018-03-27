@@ -204,7 +204,7 @@ public partial class _Default : System.Web.UI.Page
 
                 case 3:
                     string vendorCommand = "select top 1 ProviderID, ProviderName, ContactFirstName, ContactLastName, ContactPhoneNum, ContactEmail, LastUpdatedBy, LastUpdated, CompanyID" +
-                        " from [dbo].[RewardProvider] where EmpLoginID = @EmpLoginID";
+                        " from [dbo].[RewardProvider] where LoginID = @EmpLoginID";
                     SqlCommand vendorSelect = new SqlCommand(vendorCommand, conn);
                     vendorSelect.Parameters.AddWithValue("@EmpLoginID", loginID);
                     SqlDataReader vendorReader = vendorSelect.ExecuteReader();

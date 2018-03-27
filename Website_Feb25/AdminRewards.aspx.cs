@@ -259,7 +259,7 @@ public partial class AdminRewards : System.Web.UI.Page
             System.Data.SqlClient.SqlCommand insert = new System.Data.SqlClient.SqlCommand();
             insert.Connection = conn;
 
-            insert.CommandText = "insert into [dbo].[RewardItem] values (@name, @description, @price, @startdate, @enddate, @quantity, @lastupdatedby, @lastupdated, @providerid, @categoryid)";
+            insert.CommandText = "insert into [dbo].[RewardItem] values (@name, @description, @price, @startdate, @enddate, @quantity, @lastupdatedby, @lastupdated, @providerid, @categoryid, @companyID)";
             insert.Parameters.AddWithValue("@name", item.Name);
             insert.Parameters.AddWithValue("@description", item.Description);
             insert.Parameters.AddWithValue("@price", item.Price);
@@ -270,6 +270,7 @@ public partial class AdminRewards : System.Web.UI.Page
             insert.Parameters.AddWithValue("@lastupdated", item.LastUpdated);
             insert.Parameters.AddWithValue("@providerid", findProviderID(txtProvider.SelectedValue));
             insert.Parameters.AddWithValue("@categoryid", findCategoryID(txtCategory.SelectedValue));
+            insert.Parameters.AddWithValue("@companyID", user.CompanyID);
             insert.ExecuteNonQuery();
             conn.Close();
             ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Reward Added Successfully')", true);
